@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI-LAB step by step</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#f5f8f8;--surface:#fff;--ink:#122126;--muted:#56686e;--line:#d5e0e2;--teal:#0f6b74;--teal-soft:#e2f0f1;
+--amber:#c2672c;--amber-soft:#f8ebe1;--code-bg:#0f2a2f;--code-ink:#e6f4f5;
+--display:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;--body:"Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;
+--mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1618;--surface:#132226;--ink:#e3eef0;
+--muted:#97aab0;--line:#24393e;--teal:#5fc0c8;--teal-soft:#16343a;--amber:#e79a63;--amber-soft:#3a281c;--code-bg:#071113;
+--code-ink:#d8eef0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c1618;--surface:#132226;--ink:#e3eef0;--muted:#97aab0;--line:#24393e;--teal:#5fc0c8;
+--teal-soft:#16343a;--amber:#e79a63;--amber-soft:#3a281c;--code-bg:#071113;--code-ink:#d8eef0;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+a{color:var(--teal)}
+.wrap{max-width:980px;margin:0 auto;padding:36px max(16px,env(safe-area-inset-left)) 48px max(16px,env(safe-area-inset-right))}
+h1,h2{font-family:var(--display);margin:0;text-wrap:balance}h1{font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.1}
+.lede{color:var(--muted);max-width:70ch;margin:10px 0 0;font-size:1.02rem}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}.fact{font-size:.82rem;border:1px solid var(--line);
+background:var(--surface);border-radius:99px;padding:4px 12px;color:var(--muted)}.fact b{color:var(--ink)}
+.picker{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 10px;margin-top:18px;display:flex;
+flex-wrap:wrap;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+.picker span{font-size:.85rem;color:var(--muted);margin-right:4px}
+.picker button{font:600 .9rem var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);
+border-radius:99px;padding:6px 16px;cursor:pointer}
+.picker button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--surface)}
+.flow{margin-top:24px;display:flex;flex-direction:column;min-width:0}.join{width:2px;height:22px;background:var(--line);margin:0 auto}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;
+grid-template-columns:auto minmax(0,1fr);gap:4px 16px;min-width:0}
+.num{grid-row:span 2;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:700 1rem var(--display);
+background:var(--teal);color:var(--surface)}.step h2{font-size:1.15rem;align-self:center}.body{grid-column:2;min-width:0}
+.step p{margin:6px 0}.mut{color:var(--muted)}
+.label{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:12px 0 4px}
+.cmd{position:relative;background:var(--code-bg);color:var(--code-ink);border-radius:8px;margin:4px 0;min-width:0}
+.cmd pre{margin:0;padding:10px 84px 10px 12px;font:13px/1.5 var(--mono);overflow-x:auto;white-space:pre}
+.cmd.file pre{max-height:360px;overflow:auto}
+.copy,.dl{font:600 12px var(--body);background:var(--teal);color:#fff;border:0;border-radius:6px;padding:4px 10px;cursor:pointer}
+.copy{position:absolute;top:7px;right:7px}.copy:focus-visible,.dl:focus-visible,.picker button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+code{font:12.5px var(--mono);background:var(--teal-soft);color:var(--ink);padding:1px 5px;border-radius:4px}
+.ostab{display:none}body[data-os="mac"] .ostab[data-os="mac"],body[data-os="win"] .ostab[data-os="win"],
+body[data-os="ubu"] .ostab[data-os="ubu"]{display:block}
+details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}summary{cursor:pointer;color:var(--teal);font-weight:600}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:6px 0}
+.card{background:var(--teal-soft);border-radius:10px;padding:10px 12px;font-size:.92rem}
+.card b{display:block;font-family:var(--display);margin-bottom:2px}
+.files{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:22px}
+.files h2{font-size:1.15rem;margin-bottom:6px}
+.filehead{display:flex;justify-content:space-between;align-items:center;margin:14px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:8px}th,td{border:1px solid var(--line);padding:6px 8px;
+text-align:left;vertical-align:top}th{background:var(--teal-soft)}
+footer{margin-top:26px;font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+@media (max-width:640px){.step{grid-template-columns:minmax(0,1fr)}.num{grid-row:auto}.body{grid-column:1}}
+</style></head>
+<body data-os="mac"><div class="wrap">
+<h1>Run your LLM extraction on AAU AI-LAB, step by step</h1>
+<p class="lede">AI-LAB is AAU's free GPU cluster for students. Instead of keeping a Colab tab open for hours, you send the
+extraction of block 2 to AI-LAB as a job: it runs on its own, up to 12 hours, and you collect <code>facts.jsonl</code>
+when it is done. Same model (<code>gemma4:e2b</code>), same form, same results.</p>
+<div class="facts"><span class="fact"><b>Free</b> for AAU students</span><span class="fact">Apply <b>today</b>: approval takes time</span>
+<span class="fact">About <b>30 minutes</b> to set up, once</span><span class="fact">Off campus: <b>AAU VPN</b></span></div>
+<div class="picker" role="group" aria-label="Your computer"><span>Your computer:</span>
+<button type="button" data-os="mac">Mac</button><button type="button" data-os="win">Windows</button><button type="button" data-os="ubu">Ubuntu</button></div>
+<div class="flow">
+<section class="step" id="s1"><div class="num">1</div><h2>Get an account (once)</h2><div class="body">
+<p>Fill in the <a href="https://forms.office.com/e/caEhCRmqVN">AI-LAB account request form</a>. Every AAU student
+can apply; the account is your AAU email. You get an email when it is approved; wait up to 30 more minutes before the
+first login. <b>Apply now</b>: approval is not instant.</p>
+<p class="mut">Rules: only non-confidential data (AAU level 1; the assignment data is fine), AI-LAB is not storage, and
+you accept the <a href="https://hpc.aau.dk/ai-lab/terms-and-conditions/">terms</a> and
+<a href="https://hpc.aau.dk/ai-lab/fair-usage/">fair-usage policy</a>.</p>
+</div></section>
+<div class="join"></div>
+
+<section class="step" id="s2"><div class="num">2</div><h2>Log in</h2><div class="body">
+<p>AI-LAB only answers from the AAU network. <b>Off campus, connect to the AAU VPN first.</b></p>
+<div class="ostab" data-os="mac"><p>Open <b>Terminal</b> (Applications → Utilities). SSH is built in.</p><div class="cmd"><pre>ssh -l your-email@student.aau.dk ailab-fe01.srv.aau.dk</pre><button class="copy" type="button">Copy</button></div></div><div class="ostab" data-os="win"><p>Open <b>PowerShell</b> (Start → type <code>PowerShell</code>). SSH is built into Windows 10 and 11. If <code>ssh</code> is not recognised, install the OpenSSH client (Settings → System → Optional features) or use WSL.</p><div class="cmd"><pre>ssh -l your-email@student.aau.dk ailab-fe01.srv.aau.dk</pre><button class="copy" type="button">Copy</button></div></div><div class="ostab" data-os="ubu"><p>Open a <b>terminal</b> (Ctrl+Alt+T). If <code>ssh</code> is missing:</p><div class="cmd"><pre>sudo apt install openssh-client</pre><button class="copy" type="button">Copy</button></div><div class="cmd"><pre>ssh -l your-email@student.aau.dk ailab-fe01.srv.aau.dk</pre><button class="copy" type="button">Copy</button></div></div>
+<p>Use <b>your own AAU email</b>. The first time, answer <code>yes</code> to the host question. Then type your AAU
+password: nothing appears while you type, that is normal. You are in when the prompt ends in <code>@ailab-fe01:~$</code>.
+If it refuses, try <code>ailab-fe02.srv.aau.dk</code>: it is the same.</p>
+<details><summary>Optional: a shortcut, so <code>ssh ailab</code> is enough</summary>
+<div class="ostab" data-os="mac"><div class="label">Create and open the file</div><div class="cmd"><pre>mkdir -p ~/.ssh &amp;&amp; open -e ~/.ssh/config</pre><button class="copy" type="button">Copy</button></div><div class="label">Paste, with your email, and save</div><div class="cmd"><pre>Host ailab
+    HostName ailab-fe01.srv.aau.dk
+    User your-email@student.aau.dk</pre><button class="copy" type="button">Copy</button></div></div><div class="ostab" data-os="win"><div class="label">Create and open the file (save it without .txt)</div><div class="cmd"><pre>mkdir $HOME\.ssh -Force; notepad $HOME\.ssh\config</pre><button class="copy" type="button">Copy</button></div><div class="label">Paste, with your email, and save</div><div class="cmd"><pre>Host ailab
+    HostName ailab-fe01.srv.aau.dk
+    User your-email@student.aau.dk</pre><button class="copy" type="button">Copy</button></div></div><div class="ostab" data-os="ubu"><div class="label">Create and open the file</div><div class="cmd"><pre>mkdir -p ~/.ssh &amp;&amp; nano ~/.ssh/config</pre><button class="copy" type="button">Copy</button></div><div class="label">Paste, with your email, and save (Ctrl+O, Enter, Ctrl+X)</div><div class="cmd"><pre>Host ailab
+    HostName ailab-fe01.srv.aau.dk
+    User your-email@student.aau.dk</pre><button class="copy" type="button">Copy</button></div></div>
+</details>
+</div></section>
+<div class="join"></div>
+
+<section class="step" id="s3"><div class="num">3</div><h2>How AI-LAB works, in one minute</h2><div class="body">
+<div class="grid3">
+<div class="card"><b>Front end</b>Where you log in. No GPU: edit files, copy data, submit jobs. Do not run heavy work here.</div>
+<div class="card"><b>Slurm</b>Gives you a GPU node. <code>srun</code> = interactive, under an hour.
+<code>sbatch</code> = a job that runs on its own, up to 12 hours, even when your laptop is closed.</div>
+<div class="card"><b>Containers</b>Software comes in Singularity containers. Ready ones are in <code>/ceph/container</code>;
+you can pull others, such as Ollama.</div>
+</div>
+<p class="mut">Limits: 1 hour if you set no time, at most 12 hours per job; at most 4 GPUs per job and 8 per user;
+24 GB memory and 15 CPUs per GPU. <b>Ask for 1 GPU</b>: reserving GPUs you do not use breaks the fair-usage policy.</p>
+</div></section>
+<div class="join"></div>
+
+<section class="step" id="s4"><div class="num">4</div><h2>Set up Ollama and Python (once, on AI-LAB)</h2><div class="body">
+<p>Run these on AI-LAB, after logging in. Each takes a few minutes.</p>
+<div class="label">Download the Ollama container into your home folder</div><div class="cmd"><pre>srun --mem=40G --time=00:30:00 singularity pull ollama.sif docker://ollama/ollama:latest</pre><button class="copy" type="button">Copy</button></div>
+<div class="label">Install the Python packages the extraction needs</div><div class="cmd"><pre>srun --time=00:15:00 singularity exec /ceph/container/python/python_3.10.sif pip install --user openai pydantic pandas</pre><button class="copy" type="button">Copy</button></div>
+<div class="label">Test: open a shell on a GPU node, inside the container</div><div class="cmd"><pre>srun --gres=gpu:1 --mem=24G --time=00:30:00 --pty singularity shell --nv ollama.sif</pre><button class="copy" type="button">Copy</button></div>
+<div class="label">Inside that shell: start Ollama, download the model (about 7 GB, once) and ask it something</div><div class="cmd"><pre>export OLLAMA_MODELS=$HOME/ollama-models
+ollama serve &gt; ollama.log 2&gt;&amp;1 &amp;
+sleep 10
+ollama run gemma4:e2b &quot;Say ready&quot;
+exit</pre><button class="copy" type="button">Copy</button></div>
+<p class="mut">If it answers, the GPU, the container and the model work. <code>exit</code> gives the GPU back.</p>
+</div></section>
+<div class="join"></div>
+
+<section class="step" id="s5"><div class="num">5</div><h2>Prepare and copy the files</h2><div class="body">
+<p><b>In your workshop notebook</b> (Colab or Jupyter), after block 1, save the papers you want extracted:</p>
+<div class="cmd"><pre>top[[&quot;eid&quot;, &quot;text&quot;]].to_csv(&quot;papers_to_extract.csv&quot;, index=False)</pre><button class="copy" type="button">Copy</button></div>
+<p>Download the two job files below (<b>extract.py</b> and <b>run_extract.sh</b>) and put them in one folder with
+<code>papers_to_extract.csv</code>. Then copy them to AI-LAB.</p>
+<div class="ostab" data-os="mac"><p>In Terminal, in that folder:</p><div class="cmd"><pre>scp scopus_genai_business.csv papers_to_extract.csv extract.py run_extract.sh your-email@student.aau.dk@ailab-fe01.srv.aau.dk:~/</pre><button class="copy" type="button">Copy</button></div></div><div class="ostab" data-os="win"><p>Use <a href="https://winscp.net/eng/download.php">WinSCP</a>: host <code>ailab-fe01.srv.aau.dk</code>, your AAU email and password, then drag the files from the left (your PC) to the right (AI-LAB). Or in PowerShell, in that folder:</p><div class="cmd"><pre>scp scopus_genai_business.csv papers_to_extract.csv extract.py run_extract.sh your-email@student.aau.dk@ailab-fe01.srv.aau.dk:~/</pre><button class="copy" type="button">Copy</button></div></div><div class="ostab" data-os="ubu"><p>In a terminal, in that folder:</p><div class="cmd"><pre>scp scopus_genai_business.csv papers_to_extract.csv extract.py run_extract.sh your-email@student.aau.dk@ailab-fe01.srv.aau.dk:~/</pre><button class="copy" type="button">Copy</button></div></div>
+</div></section>
+<div class="join"></div>
+
+<section class="step" id="s6"><div class="num">6</div><h2>Run the extraction as a job</h2><div class="body">
+<div class="label">On AI-LAB: submit the job</div><div class="cmd"><pre>sbatch run_extract.sh</pre><button class="copy" type="button">Copy</button></div>
+<p>Slurm answers <code>Submitted batch job 12345</code>. Now you can log out and close your laptop: the job runs on its own.</p>
+<div class="label">Follow it</div><div class="cmd"><pre>squeue --me                 # is it waiting (PD) or running (R)?
+tail -f extract_*.out        # progress, e.g. &quot;250/669 done&quot; (Ctrl+C to stop watching)
+wc -l facts.jsonl            # how many papers are done
+scancel 12345                # stop the job, if you need to</pre><button class="copy" type="button">Copy</button></div>
+<p class="mut">If the job stops (time limit, error), just run <code>sbatch run_extract.sh</code> again: it skips the
+papers already in <code>facts.jsonl</code>. Errors go to <code>extract_*.err</code> and <code>ollama_*.log</code>.</p>
+</div></section>
+<div class="join"></div>
+
+<section class="step" id="s7"><div class="num">7</div><h2>Bring the results back</h2><div class="body">
+<div class="ostab" data-os="mac"><p>In Terminal, on your Mac:</p><div class="cmd"><pre>scp your-email@student.aau.dk@ailab-fe01.srv.aau.dk:~/facts.jsonl .</pre><button class="copy" type="button">Copy</button></div></div><div class="ostab" data-os="win"><p>In WinSCP drag <code>facts.jsonl</code> from right to left. Or in PowerShell:</p><div class="cmd"><pre>scp your-email@student.aau.dk@ailab-fe01.srv.aau.dk:~/facts.jsonl .</pre><button class="copy" type="button">Copy</button></div></div><div class="ostab" data-os="ubu"><p>In a terminal, on your computer:</p><div class="cmd"><pre>scp your-email@student.aau.dk@ailab-fe01.srv.aau.dk:~/facts.jsonl .</pre><button class="copy" type="button">Copy</button></div></div>
+<p>Put <code>facts.jsonl</code> next to your notebook (in Colab: upload it with the folder icon) and run block 2 of the
+workshop notebook: it finds every paper in the file and skips the LLM. Continue with the knowledge graph, RAG and the app.</p>
+</div></section>
+</div>
+
+<section class="files" id="files"><h2>The two job files</h2>
+<p class="mut">Same form and same <code>ask()</code> as in the workshop notebook, so the results fit straight into it.</p>
+<div class="filehead"><b>extract.py</b><span><button class="dl" data-file="extract.py" data-src="f1" type="button">Download</button></span></div>
+<div class="cmd file"><pre id="f1">&quot;&quot;&quot;Extract research question, data, theories, methods, findings and results from abstracts with a local LLM.
+
+Input : papers_to_extract.csv with the columns eid and text (&quot;Title. Abstract&quot;), made in the workshop notebook.
+Output: facts.jsonl, one line per paper. Run it again and it continues where it stopped.
+Needs : an Ollama server on this machine (see run_extract.sh) and: pip install --user openai pydantic pandas
+&quot;&quot;&quot;
+import json
+import os
+from concurrent.futures import ThreadPoolExecutor
+from typing import List, Literal
+
+import pandas as pd
+from openai import OpenAI
+from pydantic import BaseModel, Field
+
+MODEL = os.environ.get(&quot;MODEL&quot;, &quot;gemma4:e2b&quot;)
+INPUT, CACHE = &quot;papers_to_extract.csv&quot;, &quot;facts.jsonl&quot;
+HOST = os.environ.get(&quot;OLLAMA_HOST&quot;, &quot;127.0.0.1:11434&quot;)      # run_extract.sh gives each job its own port
+client = OpenAI(base_url=f&quot;http://{HOST}/v1&quot;, api_key=&quot;ollama&quot;, timeout=120)
+
+DATA_TYPES = {
+    &quot;survey&quot;: &quot;questionnaires answered by people&quot;,
+    &quot;interviews&quot;: &quot;interviews, focus groups or workshops&quot;,
+    &quot;experiment&quot;: &quot;a controlled experiment or user study&quot;,
+    &quot;text/documents&quot;: &quot;texts, posts, reviews, reports as data&quot;,
+    &quot;firm or market data&quot;: &quot;company, financial, market or administrative records&quot;,
+    &quot;literature&quot;: &quot;published studies, as in a review or bibliometric study&quot;,
+    &quot;llm outputs&quot;: &quot;answers generated by an LLM are the data&quot;,
+    &quot;none/conceptual&quot;: &quot;no data: theory, framework or argument&quot;,
+    &quot;other&quot;: &quot;anything else&quot;,
+}
+RELATIONS = [&quot;INCREASES&quot;, &quot;DECREASES&quot;, &quot;NO_EFFECT_ON&quot;, &quot;MODERATES&quot;, &quot;MEDIATES&quot;, &quot;ASSOCIATED_WITH&quot;]
+
+
+class Finding(BaseModel):
+    cause: str = Field(max_length=50, description=&quot;a construct in 1-4 words, lower case, e.g. &#x27;perceived usefulness&#x27;&quot;)
+    relation: Literal[tuple(RELATIONS)]
+    effect: str = Field(max_length=50, description=&quot;a construct in 1-4 words, lower case, e.g. &#x27;continuance intention&#x27;&quot;)
+
+
+class PaperFacts(BaseModel):
+    research_question: str = Field(description=&quot;the question or aim of the paper, one sentence&quot;)
+    data: str = Field(description=&quot;the data in your own words, with size and source if given; &#x27;none&#x27; if none&quot;)
+    data_type: Literal[tuple(DATA_TYPES)]
+    results: str = Field(description=&quot;the main finding, one sentence&quot;)
+    theories: List[str] = Field(description=&quot;0-3 theories or frameworks the paper builds on, e.g. &#x27;UTAUT&#x27;&quot;)
+    findings: List[Finding] = Field(description=&quot;0-3 tested relationships the abstract reports as results&quot;)
+    methods: List[str] = Field(description=&quot;1-4 analysis techniques, short standard names, e.g. &#x27;PLS-SEM&#x27;&quot;)
+
+
+SYSTEM = (&quot;Read the abstract of a scientific paper and fill in the form. Use only what the abstract says.\n&quot;
+          &quot;methods: the techniques used to analyse the data, at most 4, short standard names (e.g. &#x27;PLS-SEM&#x27;, &quot;
+          &quot;&#x27;fsQCA&#x27;, &#x27;thematic analysis&#x27;, &#x27;experiment&#x27;). Not theories, not software, not the data source.\n&quot;
+          &quot;theories: named theories or models such as TAM, UTAUT, S-O-R; empty if none.\n&quot;
+          &quot;findings: only relationships the abstract reports as tested results, at most 3; empty if none. &quot;
+          &quot;cause and effect are constructs (variables) in 1-4 words, written out in full, not sentences and not &quot;
+          &quot;acronyms, e.g. &#x27;trust&#x27; INCREASES &#x27;purchase intention&#x27;.\n&quot;
+          &quot;data: describe the data itself; do not repeat the data_type category.\ndata_type:\n&quot;
+          + &quot;&quot;.join(f&quot;- {k}: {v}\n&quot; for k, v in DATA_TYPES.items()))
+
+
+def ask(system, user, schema, max_tokens=900):
+    &quot;&quot;&quot;One structured answer. A cut-off answer often only misses its closing brackets, so add them and check.&quot;&quot;&quot;
+    form = {&quot;type&quot;: &quot;json_schema&quot;, &quot;json_schema&quot;: {&quot;name&quot;: schema.__name__, &quot;schema&quot;: schema.model_json_schema()}}
+    for temperature in (0, 0.3, 0.6):
+        r = client.chat.completions.create(
+            model=MODEL, temperature=temperature, max_tokens=max_tokens, response_format=form,
+            messages=[{&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: system}, {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user}],
+            reasoning_effort=&quot;none&quot;)
+        text = (r.choices[0].message.content or &quot;&quot;).rstrip().rstrip(&quot;,&quot;)
+        for ending in (&quot;&quot;, &quot;}&quot;, &quot;]}&quot;, &#x27;&quot;]}&#x27;, &quot;}]}&quot;, &#x27;&quot;}]}&#x27;):
+            try:
+                return schema.model_validate_json(text + ending)
+            except Exception:
+                pass
+    raise ValueError(f&quot;no valid answer after 3 tries: {text[:200]}&quot;)
+
+
+def extract(row):
+    try:
+        return {&quot;eid&quot;: row.eid, **ask(SYSTEM, row.text, PaperFacts).model_dump()}
+    except Exception as e:
+        return {&quot;eid&quot;: row.eid, &quot;error&quot;: str(e)[:200]}
+
+
+if __name__ == &quot;__main__&quot;:
+    papers = pd.read_csv(INPUT)
+    done = {json.loads(line)[&quot;eid&quot;] for line in open(CACHE)} if os.path.exists(CACHE) else set()
+    todo = papers[~papers.eid.isin(done)]
+    print(f&quot;{len(papers)} papers · {len(done)} done · {len(todo)} to do · model {MODEL}&quot;, flush=True)
+    with ThreadPoolExecutor(4) as pool, open(CACHE, &quot;a&quot;) as f:
+        for i, out in enumerate(pool.map(extract, todo.itertuples()), 1):
+            f.write(json.dumps(out) + &quot;\n&quot;)
+            f.flush()
+            if i % 25 == 0 or i == len(todo):
+                print(f&quot;{i}/{len(todo)} done&quot;, flush=True)
+    print(&quot;finished: facts.jsonl&quot;, flush=True)
+</pre><button class="copy" type="button">Copy</button></div>
+<div class="filehead"><b>run_extract.sh</b><span><button class="dl" data-file="run_extract.sh" data-src="f2" type="button">Download</button></span></div>
+<div class="cmd file"><pre id="f2">#!/bin/bash
+#SBATCH --job-name=extract
+#SBATCH --output=extract_%j.out
+#SBATCH --error=extract_%j.err
+#SBATCH --gres=gpu:1
+#SBATCH --mem=24G
+#SBATCH --cpus-per-task=8
+#SBATCH --time=06:00:00
+
+# Ollama in its own container, on a port of its own (other jobs may share the node)
+export OLLAMA_HOST=127.0.0.1:$((20000 + SLURM_JOB_ID % 10000))
+export OLLAMA_MODELS=$HOME/ollama-models
+export OLLAMA_NUM_PARALLEL=4
+singularity exec --nv ~/ollama.sif ollama serve &gt; ollama_$SLURM_JOB_ID.log 2&gt;&amp;1 &amp;
+
+# wait until the server answers, then download the model (only the first time)
+for i in $(seq 60); do singularity exec ~/ollama.sif ollama list &gt; /dev/null 2&gt;&amp;1 &amp;&amp; break; sleep 2; done
+singularity exec ~/ollama.sif ollama pull gemma4:e2b
+
+# the extraction; facts.jsonl grows as it goes
+singularity exec /ceph/container/python/python_3.10.sif python3 extract.py
+</pre><button class="copy" type="button">Copy</button></div>
+</section>
+
+<section class="files" id="trouble"><h2>When something goes wrong</h2>
+<table>
+<tr><th>You see</th><th>Do this</th></tr>
+<tr><td><code>Connection refused</code>, <code>Host unreachable</code>, or nothing happens</td><td>Connect to the AAU VPN, or try <code>ailab-fe02.srv.aau.dk</code>.</td></tr>
+<tr><td><code>Permission denied</code></td><td>Check your full AAU email and password. Approved less than 30 minutes ago? Wait.</td></tr>
+<tr><td>The job stays <code>PD</code> in <code>squeue</code></td><td>It waits for a free GPU. Leave it; ask for 1 GPU and no more time than you need.</td></tr>
+<tr><td><code>ModuleNotFoundError: openai</code></td><td>Run the pip line of step 4 again.</td></tr>
+<tr><td>No progress in <code>extract_*.out</code></td><td>Read <code>ollama_*.log</code> and <code>extract_*.err</code>. Was the model downloaded in step 4?</td></tr>
+<tr><td>Windows saved <code>config.txt</code></td><td>Rename it to <code>config</code> (no extension) in <code>C:\Users\you\.ssh</code>.</td></tr>
+</table>
+</section>
+
+<footer><span>Based on AAU's AI-LAB documentation: <a href="https://hpc.aau.dk/ai-lab/">hpc.aau.dk/ai-lab</a>
+(<a href="https://hpc.aau.dk/ai-lab/guides/login/">login</a>, <a href="https://hpc.aau.dk/ai-lab/guides/file-handling/">files</a>,
+<a href="https://hpc.aau.dk/ai-lab/guides/running-jobs/">jobs</a>, <a href="https://hpc.aau.dk/ai-lab/guides/getting-containers/">containers</a>).
+Questions about AI-LAB itself: the support contacts on those pages.</span>
+<span>M2 · Natural Language Processing and Network Analysis · workshop, 16 November</span></footer>
+</div><script>
+const KEY = "ailab-os";
+function setOS(os){
+  document.body.dataset.os = os;
+  document.querySelectorAll(".picker button").forEach(b => b.setAttribute("aria-pressed", b.dataset.os === os));
+  try { localStorage.setItem(KEY, os); } catch (e) {}
+}
+let os = null;
+try { os = localStorage.getItem(KEY); } catch (e) {}
+if (!os) {
+  const p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent;
+  os = /win/i.test(p) ? "win" : /linux|ubuntu|x11/i.test(p) ? "ubu" : "mac";
+}
+setOS(os);
+document.querySelectorAll(".picker button").forEach(b => b.addEventListener("click", () => setOS(b.dataset.os)));
+document.querySelectorAll(".copy").forEach(btn => btn.addEventListener("click", () => {
+  const pre = btn.parentElement.querySelector("pre");
+  const done = () => { btn.textContent = "Copied"; setTimeout(() => btn.textContent = "Copy", 1500); };
+  const fallback = () => { const r = document.createRange(); r.selectNodeContents(pre);
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Press Ctrl/Cmd+C"; };
+  try { navigator.clipboard.writeText(pre.textContent).then(done, fallback); } catch (e) { fallback(); }
+}));
+document.querySelectorAll(".dl").forEach(btn => btn.addEventListener("click", () => {
+  const text = document.getElementById(btn.dataset.src).textContent;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], {type: "text/plain"}));
+  a.download = btn.dataset.file; document.body.appendChild(a); a.click(); a.remove();
+}));
+</script></body></html>
